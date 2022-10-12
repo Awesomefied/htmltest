@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="./albums.js"></script>
+<style>
+body {
+	font-family: "Segoe UI";
+  color: white;
+	background-color: black;
+  text-align: center;
+  margin : 0;
+	padding : 0;
+  padding-bottom: 200px;
+}
+img {
+	max-width: 150px;
+	border-radius: 2%;
+  filter: drop-shadow(0 0 0.50rem black);
+  position: relative;
+  z-index: 0;
+}
+#mplayer {
+	display: none;
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+.era {
+  margin: auto;
+  border: #c8c8c8;
+  border-radius: 25px;
+  background: gray;
+  padding: 20px; 
+  padding-bottom: 1px;
+  max-width: 550px;
+  text-shadow: 2px 2px 10px black;
+  box-shadow: 2px 2px 5px black;
+  filter: drop-shadow(0 0 0.5rem #393939);
+  cursor: pointer;
+}
+.songs {
+  display: none;
+  margin: auto;
+  border: #c8c8c8;
+  border-radius: 5px;
+  max-width: 550px;
+  background: #3b3b3b;
+  padding: 10px;
+}
+.song {
+  border-radius: 5px;
+  background: #3b3b3b;
+  text-align: left;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.song:hover {
+  background: #6b6b6b;
+  filter: drop-shadow(0 0 0.2rem #6b6b6b);
+}
+.feat {
+  color:#c8c8c8; 
+  margin-bottom: 0px; 
+  margin-top: 0px;
+  max-width: 387px;
+}
+.playerbar {
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding-right: 25px;
+  padding-left: 25px;
+  width: 100vw;
+  background-color: #303030;
+  filter: drop-shadow(0 0 0.75rem #414141);
+  display: grid;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: none;
+  z-index: 1;
+}
+.songinfo {
+  display: flex; 
+  align-items: center; 
+  text-align: left; 
+  gap: 15px;
+}
+.rectangle {
+  position: fixed;
+  height: 150vh;
+  width: 150vw;
+  background-color: #000;
+  top: -50vh;
+  left: -50vw;
+  z-index:-1;
+}
+.slidecontainer {
+  position: relative;
+  left: 20%;
+  width: 50%;
+}
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+.CD_Quality {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #4caf50;
+  width: 66px;
+}
+.High_Quality {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #ffc107;
+  color: black;
+  width: 66px;
+}
+.Lossless {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #45bcff;
+  width: 66px;
+}
+.Low_Quality {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #e70000;
+  width: 66px;
+}
+.Recording {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #000000;
+  width: 66px;
+}
+.Full {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #073763;
+  width: 66px;
+}
+.Snippet {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #990000;
+  width: 66px;
+}
+.Tagged {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #274e13;
+  width: 66px;
+}
+.Partial {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #bf9000;
+  width: 66px;
+}
+.info {
+  font-weight: bold;
+  border-radius: 50%;
+  border: 3px solid gray;
+  padding-left: 7px;
+  padding-right: 7px;
+  margin-left: auto;
+  color: gray;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+</style>
+</head>
+<body>
+  <div id="playerbar" class="playerbar">
+    <div id="songinfo" class="songinfo">
+      <img id="songcover" style="max-width: 110px;" src="">
+      <div>
+        <p id="songname" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        <p id="songfeat" class="feat"></p>
+      </div>
+    </div>
+    <div style="padding: 50px;">
+      <audio id="audioplayer" controls autoplay>
+        <source src="">
+      </audio> 
+    </div>
+    <div id="slidecontainer" class="slidecontainer">
+      <input type="range" min="0" max="100" value="100" class="slider" id="volume">
+    </div>
+  </div>
+  <div id="mplayer">
+    <div class="rectangle"></div>
+    <h1 id="songera">No song selected</h1>
+    <img id="songcover2" style="max-width: 500px; width: 75vw; filter: drop-shadow(0 0 0.75rem #797979);" src="">
+    <p id="songname2"></p>
+    <p id="songfeat2" style="color:#c8c8c8;"></p>
+    </div>
+    <div onclick="mplayer();" style="cursor: pointer;">
+    <b id="mp_button" style="display: none;left:95vw;position:relative;user-select:none;top:82vh;position:fixed;z-index:1;">^</b>
+  </div>
+
+<script>
+
+function decodefilename(str) {
+    if(str && typeof str === 'string') {
+      var str = str.replaceAll('<', '_');
+      var str = str.replaceAll('>', '_');
+      var str = str.replaceAll(':', '_');
+      var str = str.replaceAll('/', '_');
+      var str = str.replaceAll("\\", '_');
+      var str = str.replaceAll('|', '_');
+      var str = str.replaceAll('?', '_');
+      var str = str.replaceAll('*', '_');
+      var str = str.replaceAll('.', '_');
+      var str = str.trim();
+    }
+    return str;
+}
+
+function qrm(str) {
+  return str.replace(/["']/g, "");
+}
+
+const myObj = albums;
+
+for (let i = 0; i < Object.keys(myObj).length; i++) {
+    if (myObj[i].feat == undefined) {
+      myObj[i].feat = ""
+    }
+    if (myObj[i].alts == undefined) {
+      myObj[i].alts = ""
+    }
+    if (i == 0 || myObj[i].era != myObj[i-1].era && !document.getElementById('s_'+qrm(myObj[i].era))) {
+          var Era = document.createElement('div');
+          Era.className = "era";
+          Era.id = qrm(myObj[i].era);
+          Era.setAttribute("onclick",'showsongs("s_'+qrm(myObj[i].era)+'")');
+          Era.style.background = 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("./images/'+escape(decodefilename(myObj[i].era))+'.jpg")';
+          Era.style.backgroundPosition = 'center';
+          var EraImg = document.createElement('img');
+          EraImg.src = "./images/"+escape(decodefilename(myObj[i].era))+".jpg";
+          EraImg.alt = myObj[i].era;
+          var Etitle = document.createElement('h1');
+          Etitle.innerText = myObj[i].era;
+          Era.appendChild(EraImg);
+          Era.appendChild(Etitle);
+          document.body.appendChild(document.createElement('br'));
+          document.body.appendChild(Era);
+          var Songs = document.createElement('div');
+          Songs.className = "songs";
+          Songs.id = "s_"+qrm(myObj[i].era);
+    } else {
+      var Songs = document.getElementById('s_'+qrm(myObj[i].era));
+    }
+    var SongDiv = document.createElement('div');
+    SongDiv.className = "song";
+    SongDiv.setAttribute("onclick",`setsong(${i});`); 
+    if (myObj[i].grail == true) {
+      SongDiv.style = "border: solid gold;";
+    }
+    var SongInfo = document.createElement('div');
+    var Stitle = document.createElement('p');
+    var Sfeat = document.createElement('p');
+    var Salts = document.createElement('p');
+    Stitle.style = "margin-bottom: 0px; margin-top: 0px;";
+    Stitle.innerHTML = myObj[i].title;
+    Sfeat.className = "feat";
+    Sfeat.innerText = myObj[i].feat;
+    Salts.className = "feat";
+    Salts.innerText = myObj[i].alts;
+    var info = document.createElement('div');
+    info.className = "info";
+    info.innerText = "i";
+    info.setAttribute("onclick",'showinfo('+i+')');
+    var tags = document.createElement('div');
+    tags.style = "text-align: center;";
+    var Tavail = document.createElement('p');
+    Tavail.className = myObj[i].avail.replaceAll(' ', '_');
+    Tavail.innerText = myObj[i].avail;
+    var Tqual = document.createElement('p');
+    Tqual.className = myObj[i].qual.replaceAll(' ', '_');
+    Tqual.innerText = myObj[i].qual;
+    tags.appendChild(Tavail);
+    tags.appendChild(Tqual);
+    SongInfo.appendChild(Stitle);
+    SongInfo.appendChild(Sfeat);
+    SongInfo.appendChild(Salts);
+    SongDiv.appendChild(SongInfo);
+    SongDiv.appendChild(info);
+    SongDiv.appendChild(tags);
+    Songs.appendChild(SongDiv);
+    if (!document.getElementById('s_'+qrm(myObj[i].era))){
+        document.body.appendChild(Songs);
+    }
+  }
+
+var mpb = document.getElementById("mp_button");
+var mp = document.getElementById("mplayer");
+var erablock = document.querySelectorAll('.era');
+var s_era = document.getElementById("songera");
+var s_name = document.getElementById("songname");
+var s_feat = document.getElementById("songfeat");
+var s_name2 = document.getElementById("songname2");
+var s_feat2 = document.getElementById("songfeat2");
+var s_cover = document.getElementById("songcover");
+var s_cover2 = document.getElementById("songcover2"); 
+var s_player = document.getElementById("audioplayer");
+var s_info = document.getElementById("songinfo");
+var s_volbar = document.getElementById("slidecontainer");
+
+function showinfo(i) {
+  alert(myObj[i].desc);
+}
+
+function resize() {
+      if (window.innerWidth > window.innerHeight) { 
+          mp.style.display = "none";
+          mpb.style.display = "none";
+          s_info.style.display = "flex";
+          s_volbar.style.display = "flex";
+          mpb.innerHTML = "^";
+		      mpb.style.top = "82vh";
+          document.body.style.overflow = 'visible';
+          erablock.forEach(element => {element.style.display = "block"});
+      } else {
+        mpb.style.display = "block";
+        s_info.style.display = "none";
+        s_volbar.style.display = "none";
+      }   
+}  
+window.onresize = resize;
+
+function mplayer() {
+	if (!mpb.innerHTML == true || mpb.innerHTML == "^") {
+		mpb.innerHTML = "v";
+		mpb.style.top = "3vh";
+    mp.style.display = "block";
+    erablock.forEach(element => {element.style.display = "none"});
+    document.body.style.overflow = 'hidden';
+	} else {
+		mpb.innerHTML = "^";
+		mpb.style.top = "82vh";
+    mp.style.display = "none";
+    erablock.forEach(element => {element.style.display = "block"});
+    document.body.style.overflow = 'visible';
+	}
+}
+function showsongs(id) {
+  var songsid = document.getElementById(id);
+  if (songsid.style.display != "block"){
+    songsid.style.display = "block";
+  } else {
+    songsid.style.display = "none";
+  }
+}
+function openInNewTab(url) {
+    window.open(url, '_blank').focus();  
+}
+function setsong(i, clicked) {
+  if (i > Object.keys(myObj).length-1) {
+    i = 0
+  }
+  if (!myObj[i].dir[0] == true) {
+    if (clicked == false) {
+      setsong(i+1, false);
+      return;
+    } else {
+      openInNewTab(myObj[i].links[0]);
+      return;
+    }
+  } 
+  if (myObj[i].loc == "/" || myObj[i].loc == "./" || myObj[i].loc == "") {
+    fileurl = "";
+  } else {
+    fileurl = "file://";
+  }
+  if (myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".mp3" &&
+      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".oog" &&
+      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".m4a" &&
+      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".flac" &&
+      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".wav" ) {
+        if (clicked == false) {
+          setsong(i+1, false);
+          return;
+        } else {
+          openInNewTab(fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[0]);
+          return;
+        }
+      }
+  document.getElementById("playerbar").style.display = "grid";
+  s_era.innerHTML = myObj[i].era;
+  s_name.innerHTML = myObj[i].title;
+  s_feat.innerHTML = myObj[i].feat;
+  s_name2.innerHTML = myObj[i].title;
+  s_feat2.innerHTML = myObj[i].feat;
+  s_player.src = fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[0];
+  s_cover.src = `./images/${escape(decodefilename(myObj[i].era))}.jpg`;
+  s_cover2.src = `./images/${escape(decodefilename(myObj[i].era))}.jpg`;
+  s_player.play().then(_ => { 
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+      title: myObj[i].title,
+      artist: myObj[i].feat,
+      album: myObj[i].era,
+      artwork: [
+        { src: `./images/${escape(decodefilename(myObj[i].era))}.jpg`,   type: 'image/jpg' },
+      ]
+      });
+    }
+    }).catch(error => { console.log(error) });
+  s_player.onended = function() {
+    setsong(i+1, false);
+  };
+}
+var slider = document.getElementById("volume");
+var audio = document.getElementById("audioplayer");
+audio.volume = slider.value/100; 
+
+slider.oninput = function() {
+  audio.volume = this.value/100; 
+}
+</script>
+
+</body>
+</html>

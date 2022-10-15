@@ -2,10 +2,10 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://raw.githubusercontent.com/Awesomefied/htmltest/main/albums.js"></script>
+<script src="./albums.js"></script>
 <style>
 body {
-	font-family: "Segoe UI";
+	font-family: Segoe UI,Inter,sans-serif;
   color: white;
 	background-color: black;
   text-align: center;
@@ -19,6 +19,13 @@ img {
   filter: drop-shadow(0 0 0.50rem black);
   position: relative;
   z-index: 0;
+}
+.play {
+	width: 0;
+	height: 0;
+	border-top: 11px solid transparent;
+	border-left: 19px solid black;
+	border-bottom: 11px solid transparent;
 }
 #mplayer {
 	display: none;
@@ -71,9 +78,7 @@ img {
 .playerbar {
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  padding-right: 25px;
-  padding-left: 25px;
-  width: 100vw;
+  padding: 25px;
   background-color: #303030;
   filter: drop-shadow(0 0 0.75rem #414141);
   display: grid;
@@ -91,13 +96,15 @@ img {
   gap: 15px;
 }
 .rectangle {
-  position: fixed;
-  height: 150vh;
-  width: 150vw;
   background-color: #000;
-  top: -50vh;
-  left: -50vw;
-  z-index:-1;
+  position: fixed;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
 }
 .slidecontainer {
   position: relative;
@@ -113,6 +120,8 @@ img {
   outline: none;
   -webkit-transition: .2s;
   transition: opacity .2s;
+  position: relative;
+  cursor: pointer;
 }
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -129,6 +138,15 @@ img {
   border-radius: 50%;
   background: #fff;
   cursor: pointer;
+}
+.playpause {
+  border: white;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  display: grid;
+  justify-content: center;
+  align-content: center;
 }
 .CD_Quality {
   border-radius: 4px;
@@ -221,6 +239,16 @@ img {
   background: #bf9000;
   width: 66px;
 }
+.Beat_Only {
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0px;
+  margin-left: 10px;
+  background: #8e7cc3;
+  width: 66px;
+}
 .info {
   font-weight: bold;
   border-radius: 50%;
@@ -234,6 +262,7 @@ img {
 </style>
 </head>
 <body>
+  <div id="mplayerbg" class="rectangle"></div>
   <div id="playerbar" class="playerbar">
     <div id="songinfo" class="songinfo">
       <img id="songcover" style="max-width: 110px;" src="">
@@ -242,24 +271,36 @@ img {
         <p id="songfeat" class="feat"></p>
       </div>
     </div>
-    <div style="padding: 50px;">
-      <audio id="audioplayer" controls autoplay>
-        <source src="">
-      </audio> 
+    <div>
+      <div style="display: flex; justify-content: center;">
+        <button id="playpause" class="playpause" onclick="if(audio.paused==true){audio.play()}else{audio.pause()}">
+          <svg id="pause" x="0px" y="0px" viewBox="0 0 300 374" enable-background="new 0 0 300 374" width="19px" style="display: none;">
+            <path fill="#000000" opacity="1" stroke="none" d=" M113.000000,375.000000   C75.693993,375.000000 38.387989,375.000000 1.040992,375.000000   C1.040992,250.451935 1.040992,125.903839 1.040992,1.000000   C38.020134,1.000000 75.041412,1.000000 112.531342,1.468657   C113.000000,126.291542 113.000000,250.645767 113.000000,375.000000  z"></path>
+            <path fill="#000000" opacity="1" stroke="none" d=" M189.000000,1.000000   C226.306015,1.000000 263.612030,1.000000 300.959015,1.000000   C300.959015,125.548073 300.959015,250.096161 300.959015,375.000000   C263.979858,375.000000 226.958588,375.000000 189.468658,374.531342   C189.000000,249.708450 189.000000,125.354225 189.000000,1.000000  z"></path>
+            <path fill="#FFFFFF" opacity="0" stroke="none" d=" M188.531342,1.000000   C189.000000,125.354225 189.000000,249.708450 189.000000,374.531342   C163.979111,375.000000 138.958206,375.000000 113.468658,375.000000   C113.000000,250.645767 113.000000,126.291542 113.000000,1.468657   C138.020889,1.000000 163.041794,1.000000 188.531342,1.000000  z"></path>
+          </svg>
+          <div id="play" class="play"></div>
+        </button>
+      </div>
+      <div style="display: flex;">
+        <audio id="audioplayer" autoplay></audio> 
+        <p id="timein">0:00</p>
+        <input id="seekbar" class="slider" style="top: 23px; margin-left: 10px; margin-right: 10px;" type="range" min="0" max="100" value="0">
+        <p id="timeleft">NaN</p>
+      </div>
     </div>
     <div id="slidecontainer" class="slidecontainer">
       <input type="range" min="0" max="100" value="100" class="slider" id="volume">
     </div>
   </div>
   <div id="mplayer">
-    <div class="rectangle"></div>
     <h1 id="songera">No song selected</h1>
     <img id="songcover2" style="max-width: 500px; width: 75vw; filter: drop-shadow(0 0 0.75rem #797979);" src="">
     <p id="songname2"></p>
     <p id="songfeat2" style="color:#c8c8c8;"></p>
     </div>
     <div onclick="mplayer();" style="cursor: pointer;">
-    <b id="mp_button" style="display: none;left:95vw;position:relative;user-select:none;top:82vh;position:fixed;z-index:1;">^</b>
+    <b id="mp_button" style="display: none; position: relative; user-select: none; position: fixed; z-index: 1; right: 0; padding: 30px;">^</b>
   </div>
 
 <script>
@@ -317,7 +358,6 @@ for (let i = 0; i < Object.keys(myObj).length; i++) {
     }
     var SongDiv = document.createElement('div');
     SongDiv.className = "song";
-    SongDiv.setAttribute("onclick",`setsong(${i});`); 
     if (myObj[i].grail == true) {
       SongDiv.style = "border: solid gold;";
     }
@@ -351,15 +391,37 @@ for (let i = 0; i < Object.keys(myObj).length; i++) {
     SongDiv.appendChild(SongInfo);
     SongDiv.appendChild(info);
     SongDiv.appendChild(tags);
-    Songs.appendChild(SongDiv);
+
+    
+    if (myObj[i].links.length == 1) {
+      SongDiv.setAttribute("onclick",`setsong(${i});`); 
+      Songs.appendChild(SongDiv);
+    } else {
+      var detail = document.createElement("details");
+      detail.className = "song";
+      var summary = document.createElement("summary");
+      summary.innerText = myObj[i].title+" ("+myObj[i].links.length+")";
+      detail.appendChild(summary);
+      for (let s = 0; s < myObj[i].links.length; s++) { 
+          var SnipDiv = SongDiv.cloneNode(true)
+          SnipDiv.setAttribute("onclick",`setsong(${i}, true, ${s});`); 
+          SnipDiv.style = "margin-left: 32px;";
+          detail.appendChild(SnipDiv);
+      }
+      Songs.appendChild(detail);
+    }
     if (!document.getElementById('s_'+qrm(myObj[i].era))){
         document.body.appendChild(Songs);
     }
   }
 
 var mpb = document.getElementById("mp_button");
+var mpbg = document.getElementById("mplayerbg");
 var mp = document.getElementById("mplayer");
+var pauseicon = document.getElementById("pause");
+var playicon = document.getElementById("play");
 var erablock = document.querySelectorAll('.era');
+var playerbar = document.getElementById("playerbar");
 var s_era = document.getElementById("songera");
 var s_name = document.getElementById("songname");
 var s_feat = document.getElementById("songfeat");
@@ -378,32 +440,35 @@ function showinfo(i) {
 function resize() {
       if (window.innerWidth > window.innerHeight) { 
           mp.style.display = "none";
+          mpbg.style.display = "none";
           mpb.style.display = "none";
           s_info.style.display = "flex";
           s_volbar.style.display = "flex";
           mpb.innerHTML = "^";
-		      mpb.style.top = "82vh";
+          playerbar.style.gridTemplateColumns = "1fr 1fr 1fr";
           document.body.style.overflow = 'visible';
           erablock.forEach(element => {element.style.display = "block"});
       } else {
         mpb.style.display = "block";
         s_info.style.display = "none";
         s_volbar.style.display = "none";
+        playerbar.style.gridTemplateColumns = "1fr";
       }   
 }  
+resize();
 window.onresize = resize;
 
 function mplayer() {
-	if (!mpb.innerHTML == true || mpb.innerHTML == "^") {
-		mpb.innerHTML = "v";
-		mpb.style.top = "3vh";
+	if (mpb.innerText == "^") {
+		mpb.innerText = "v";
     mp.style.display = "block";
+    mpbg.style.display = "block";
     erablock.forEach(element => {element.style.display = "none"});
     document.body.style.overflow = 'hidden';
 	} else {
-		mpb.innerHTML = "^";
-		mpb.style.top = "82vh";
+		mpb.innerText = "^";
     mp.style.display = "none";
+    mpbg.style.display = "none";
     erablock.forEach(element => {element.style.display = "block"});
     document.body.style.overflow = 'visible';
 	}
@@ -419,16 +484,19 @@ function showsongs(id) {
 function openInNewTab(url) {
     window.open(url, '_blank').focus();  
 }
-function setsong(i, clicked) {
+function setsong(i, clicked, s) {
+  if (!s) {
+    s = 0;
+  }
   if (i > Object.keys(myObj).length-1) {
     i = 0
   }
-  if (!myObj[i].dir[0] == true) {
+  if (!myObj[i].dir[s] == true) {
     if (clicked == false) {
       setsong(i+1, false);
       return;
     } else {
-      openInNewTab(myObj[i].links[0]);
+      openInNewTab(myObj[i].links[s]);
       return;
     }
   } 
@@ -437,26 +505,26 @@ function setsong(i, clicked) {
   } else {
     fileurl = "file://";
   }
-  if (myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".mp3" &&
-      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".oog" &&
-      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".m4a" &&
-      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".flac" &&
-      myObj[i].dir[0].toString().toLowerCase().slice(myObj[i].dir[0].toString().lastIndexOf(".")) != ".wav" ) {
+  if (myObj[i].dir[s].toString().toLowerCase().slice(myObj[i].dir[s].toString().lastIndexOf(".")) != ".mp3" &&
+      myObj[i].dir[s].toString().toLowerCase().slice(myObj[i].dir[s].toString().lastIndexOf(".")) != ".oog" &&
+      myObj[i].dir[s].toString().toLowerCase().slice(myObj[i].dir[s].toString().lastIndexOf(".")) != ".m4a" &&
+      myObj[i].dir[s].toString().toLowerCase().slice(myObj[i].dir[s].toString().lastIndexOf(".")) != ".flac" &&
+      myObj[i].dir[s].toString().toLowerCase().slice(myObj[i].dir[s].toString().lastIndexOf(".")) != ".wav" ) {
         if (clicked == false) {
           setsong(i+1, false);
           return;
         } else {
-          openInNewTab(fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[0]);
+          openInNewTab(fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[s]);
           return;
         }
       }
-  document.getElementById("playerbar").style.display = "grid";
+  playerbar.style.display = "grid";
   s_era.innerHTML = myObj[i].era;
   s_name.innerHTML = myObj[i].title;
   s_feat.innerHTML = myObj[i].feat;
   s_name2.innerHTML = myObj[i].title;
   s_feat2.innerHTML = myObj[i].feat;
-  s_player.src = fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[0];
+  s_player.src = fileurl+myObj[i].loc+"albums/"+decodefilename(myObj[i].era)+"/"+decodefilename(myObj[i].title)+"/"+myObj[i].dir[s];
   s_cover.src = `./images/${escape(decodefilename(myObj[i].era))}.jpg`;
   s_cover2.src = `./images/${escape(decodefilename(myObj[i].era))}.jpg`;
   s_player.play().then(_ => { 
@@ -474,13 +542,68 @@ function setsong(i, clicked) {
   s_player.onended = function() {
     setsong(i+1, false);
   };
+  const actionHandlers = [
+    ['play',          () => { document.getElementById("audioplayer").play()}],
+    ['pause',         () => { document.getElementById("audioplayer").pause()}],
+    ['previoustrack', () => { setsong(i-2, false); }],
+    ['nexttrack',     () => { setsong(i+1, false); }],
+    ['stop',          () => { document.getElementById("audioplayer").pause() }],
+    //['seekbackward',  (details) => { /* ... */ }],
+    //['seekforward',   (details) => { /* ... */ }],
+    //['seekto',        (details) => { /* ... */ }],
+  ];
+
+  for (const [action, handler] of actionHandlers) {
+    try {
+      navigator.mediaSession.setActionHandler(action, handler);
+    } catch (error) {
+      console.log(`The media session action "${action}" is not supported yet.`);
+    }
+  }
 }
+
+const calculateTime = (secs) => {
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    return `${minutes}:${returnedSeconds}`;
+}
+
 var slider = document.getElementById("volume");
+var seekbar = document.getElementById("seekbar");
 var audio = document.getElementById("audioplayer");
 audio.volume = slider.value/100; 
 
+function updatebar() {
+    if (seekbar.max != Math.floor(audio.duration*100)) {
+      seekbar.max = Math.floor(audio.duration*100);
+    }
+    if (seekbar.value != Math.floor(audio.currentTime*100)) {
+		  seekbar.value = Math.floor(audio.currentTime*100);
+    }
+    if (document.getElementById("timein").innerText != calculateTime(Math.floor(audio.currentTime))) {
+      document.getElementById("timein").innerText = calculateTime(Math.floor(audio.currentTime));
+      document.getElementById("timeleft").innerText = calculateTime(Math.floor(audio.duration-audio.currentTime));
+    }
+	}
+setInterval(updatebar, 100);
+
+audio.onplay = function() {
+  pauseicon.style.display = "block"; 
+  playicon.style.display = "none";
+}
+
+audio.onpause = function() {
+  pauseicon.style.display = "none"; 
+  playicon.style.display = "block";
+}
+
 slider.oninput = function() {
   audio.volume = this.value/100; 
+}
+
+seekbar.oninput = function() {
+  audio.currentTime = seekbar.value/100;
 }
 </script>
 
